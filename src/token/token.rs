@@ -16,8 +16,9 @@ fn get_str(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
     let mut n: usize = 0;
     if chars[start_index] != '"' { return (TokenType::Str(String::new()), 0); }
     n += 1;
-    while start_index + n < chars.len() && chars[start_index + n].is_ascii_alphanumeric() { n += 1; }
-    if chars[start_index + n] != '"' { return (TokenType::Str(String::new()), 0); }
+    while start_index + n < chars.len() && chars[start_index + n] != '"' { n += 1; }
+    n += 1;
+    if start_index + n - 1 == chars.len() { return (TokenType::Str(String::new()), 0); }
     (TokenType::Str(chars[start_index..(start_index + n)].iter().clone().collect::<String>()), n)
 }
 
@@ -51,13 +52,12 @@ fn get_equal(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
     }
 }
 
-pub fn tokenize(line: String) -> Vec<Token> {
+pub fn tokenize(line: String, line_i: usize) -> Vec<Token> {
     let chars: Vec<char> = line.chars().collect();
-    let tokens: Vec<Token> = Vec::new();
+    let mut tokens: Vec<Token> = Vec::new();
     let mut i: usize = 0;
   
     while i < chars.len() {
-        println!("{}", i);
         let mut scores: Vec<(TokenType, usize)> = Vec::new();
 
         scores.push(get_white_space(&chars, i));
@@ -68,14 +68,19 @@ pub fn tokenize(line: String) -> Vec<Token> {
         scores.push(get_minus(&chars, i));
         scores.push(get_equal(&chars, i));
 
-        // let mut max: (TokenType, usize) = scores[0];
-        scores.sort_by(|a, b| a.1.cmp(&b.1));
-
-        dbg!(scores);
-        println!("---------");
-
-        i += 1;
+        scores.sort_by(|a, b| b.1.cmp(&a.1));
+        let best_count = scores[0].1;
+        
+        if best_count != 0 {
+            let token: Token = Token::new(scores[0].0.clone(), line_i, i);
+            tokens.push(token);
+            i += best_count;
+        } else {
+            panic!("Erreur de syntaxe {}:{}", line_i, i);
+        }
     }
+
+    dbg!(&tokens);
 
     tokens
 }
