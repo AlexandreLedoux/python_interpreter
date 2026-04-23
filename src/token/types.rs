@@ -7,7 +7,8 @@ pub enum TokenType {
     Int(u32),
     Plus,
     Minus,
-    WhiteSpace(usize)
+    WhiteSpace(usize),
+    Equal
 }
 
 #[derive(Debug, Clone)]
@@ -37,7 +38,8 @@ impl fmt::Display for TokenType {
             TokenType::Int(val) => write!(f, "Int: {}", val),
             TokenType::Plus => write!(f, "Plus"),
             TokenType::Minus => write!(f, "Minus"),
-            TokenType::WhiteSpace(val) => write!(f, "Space: {}", val)
+            TokenType::WhiteSpace(val) => write!(f, "Space: {}", val),
+            TokenType::Equal => write!(f, "Equal")
         }
     }
 }
