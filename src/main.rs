@@ -1,23 +1,13 @@
-mod reader;
-use crate::reader::*;
-mod token;
-use crate::token::*;
-mod parser;
-use crate::parser::*;
+use python_interpreter::reader::*;
+use python_interpreter::token::token::*;
 
 fn main() {
     let lines = get_string(String::from("input.py"));
 
     for line in lines {
         match line {
-            Ok(val) => {
-                println!("{}", val);
-                let tokens: Vec<Token> = parse(val);
-                for token in tokens {
-                    println!("{}", token);
-                }
-            },
-            _ => println!("ERROR")
-        }
+            Ok(val) => tokenize(val),
+            Err(_) => panic!("Erreur de la lecture de la ligne")
+        };
     }
 }

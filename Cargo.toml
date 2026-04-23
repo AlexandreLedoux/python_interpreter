@@ -1,5 +1,5 @@
 [package]
-name = "python-interpreter"
+name = "python_interpreter"
 version = "0.1.0"
 edition = "2024"
 
