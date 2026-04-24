@@ -1,9 +1,26 @@
 use crate::token::types::*;
 
-fn get_white_space(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
+fn get_white_space(chars: &Vec<char>, start_index: usize) -> usize {
     let mut n: usize = 0;
     while start_index + n < chars.len() && chars[start_index + n] == ' ' { n += 1; }
-    (TokenType::WhiteSpace(n), n)
+    n
+}
+
+fn get_newline(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
+    match chars[start_index] {
+        '\n' => (TokenType::Newline, 1),
+        _ => (TokenType::Newline, 0)
+    }
+}
+
+fn get_indent(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
+    let mut n: usize = 0;
+    while start_index + n < chars.len() && chars[start_index + n] == ' ' { n += 1; }
+    if n != 0 && n % 4 == 0 {
+        (TokenType::Indent, n)
+    } else {
+        (TokenType::Indent, 0)
+    }
 }
 
 fn get_identifier(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
@@ -52,15 +69,17 @@ fn get_equal(chars: &Vec<char>, start_index: usize) -> (TokenType, usize) {
     }
 }
 
-pub fn tokenize(line: String, line_i: usize) -> Vec<Token> {
-    let chars: Vec<char> = line.chars().collect();
+pub fn tokenize(content: String) -> Vec<Token> {
+    let chars: Vec<char> = content.chars().collect();
     let mut tokens: Vec<Token> = Vec::new();
     let mut i: usize = 0;
-  
+    let mut line_i: usize = 0;
+
     while i < chars.len() {
         let mut scores: Vec<(TokenType, usize)> = Vec::new();
 
-        scores.push(get_white_space(&chars, i));
+        scores.push(get_newline(&chars, i));
+        scores.push(get_indent(&chars, i));
         scores.push(get_identifier(&chars, i));
         scores.push(get_str(&chars, i));
         scores.push(get_int(&chars, i));
@@ -70,8 +89,9 @@ pub fn tokenize(line: String, line_i: usize) -> Vec<Token> {
 
         scores.sort_by(|a, b| b.1.cmp(&a.1));
         let best_count = scores[0].1;
-        
+
         if best_count != 0 {
+            if scores[0].0 == TokenType::Newline { line_i += 1; }
             let token: Token = Token::new(scores[0].0.clone(), line_i, i);
             tokens.push(token);
             i += best_count;
@@ -80,8 +100,8 @@ pub fn tokenize(line: String, line_i: usize) -> Vec<Token> {
         }
     }
 
+    dbg!(content);
     dbg!(&tokens);
 
     tokens
 }
-

@@ -1,14 +1,16 @@
 use std::fmt;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
     Identifier(String),
     Str(String),
     Int(u32),
     Plus,
     Minus,
-    WhiteSpace(usize),
-    Equal
+    Equal,
+    Newline,
+    Indent,
+    Dedent
 }
 
 #[derive(Debug, Clone)]
@@ -38,8 +40,10 @@ impl fmt::Display for TokenType {
             TokenType::Int(val) => write!(f, "Int: {}", val),
             TokenType::Plus => write!(f, "Plus"),
             TokenType::Minus => write!(f, "Minus"),
-            TokenType::WhiteSpace(val) => write!(f, "Space: {}", val),
-            TokenType::Equal => write!(f, "Equal")
+            TokenType::Equal => write!(f, "Equal"),
+            TokenType::Newline => write!(f, "Newline"),
+            TokenType::Indent => write!(f, "Indent"),
+            TokenType::Dedent => write!(f, "Dedent"),
         }
     }
 }

@@ -1,13 +1,14 @@
-use python_interpreter::reader::*;
 use python_interpreter::token::token::*;
+use python_interpreter::token::types::*;
+use python_interpreter::parser::parser::parse;
+use std::fs;
 
 fn main() {
-    let lines = get_string(String::from("input.py"));
-
-    for (i, line) in lines.enumerate() {
-        match line {
-            Ok(val) => tokenize(val, i),
-            Err(_) => panic!("Erreur de la lecture de la ligne")
-        };
+    match fs::read_to_string(String::from("input.py")) {
+        Ok(content) => {
+            let tokens: Vec<Token> = tokenize(content);
+        },
+        Err(e) => panic!("Impossible d'ouvrir le fichier.")
     }
+
 }
