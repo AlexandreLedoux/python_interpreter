@@ -91,13 +91,15 @@ pub fn tokenize(content: String) -> Vec<Token> {
         let best_count = scores[0].1;
 
         if best_count != 0 {
-            if scores[0].0 == TokenType::Newline { line_i += 1; }
             let token: Token = Token::new(scores[0].0.clone(), line_i, i);
             tokens.push(token);
             i += best_count;
         } else {
+            if scores[0].0 == TokenType::Newline { line_i += 1; }
             panic!("Erreur de syntaxe {}:{}", line_i, i);
         }
+
+        dbg!(best_count);
     }
 
     dbg!(content);
